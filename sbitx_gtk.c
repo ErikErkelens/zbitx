@@ -4223,9 +4223,23 @@ void try_ntp(){
 		next_sync = millis() + 30000;
 }
 
+static gint64 last_time = 0
+static gint64 max_delta = 0;
+
 gboolean ui_tick(gpointer gook){
 	int static ticks = 0;
 
+	gint64 now = g_get_monotonic_time();
+	gint delta_us = now -last_time;
+	max_delta = max(max_delta, delta_us);
+	min_delta = min(min_delta, delta_us);
+
+	if(tick%200==00)
+	{
+		g_print("max: %li", max_delta )
+		g_print("min: %li", min_delta )
+	}
+	
 	ticks++;
 
 	while (q_length(&q_remote_commands) > 0){
